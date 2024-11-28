@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration Form</title>
+    <!-- Inline CSS -->
+    <style>
+       
+    
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #message {
+            color: green;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+        .error {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <h2>Registration Form</h2>
+    <!-- Registration Form -->
+    <form id="registrationForm">
+        <label for="username">Username:</label><br>
+        <input type="text" id="username" name="username" placeholder="Enter username" required><br>
+
+        <label for="email">Email:</label><br>
+        <input type="email" id="email" name="email" placeholder="Enter email" required><br>
+
+        <label for="password">Password:</label><br>
+        <input type="password" id="password" name="password" placeholder="Enter password" required><br>
+
+        <button type="submit">Register</button>
+    </form>
+
+    <!-- Message Display -->
+    <p id="message"></p>
+
+    <!-- Inline JavaScript -->
+    <script>
+        document.getElementById("registrationForm").addEventListener("submit", function(event) {
+            event.preventDefault(); // Prevent form from submitting
+
+            // Get input values
+            const username = document.getElementById("username").value;
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
+            const messageElement = document.getElementById("message");
+
+            // Validate inputs
+            if (username === "" || email === "" || password === "") {
+                messageElement.textContent = "All fields are required!";
+                messageElement.classList.add("error");
+                return;
+            }
+
+            // Check for valid email format
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailPattern.test(email)) {
+                messageElement.textContent = "Invalid email format!";
+                messageElement.classList.add("error");
+                return;
+            }
+
+            // If all validations pass, show success message
+            messageElement.textContent = "Registration Successful!";
+            messageElement.classList.remove("error");
+            messageElement.style.color = "green";
+
+            // Clear the form
+            document.getElementById("registrationForm").reset();
+        });
+    </script>
+</body>
+</html>
+
+const { Builder, By, Key, until } = require('selenium-webdriver');
+
+async function testRegistrationForm() {
+    // Set up WebDriver
+    let driver = await new Builder().forBrowser('chrome').build();
+    try {
+        // Navigate to the registration form
+        await driver.get('http://localhost:8080');
+
+        // Enter username
+        await driver.findElement(By.id('username')).sendKeys('student1');
+
+        // Enter email
+        await driver.findElement(By.id('email')).sendKeys('student1@example.com');
+
+        // Enter password
+        await driver.findElement(By.id('password')).sendKeys('password123');
+
+        // Click the Register button
+        await driver.findElement(By.css('button[type="submit"]')).click();
+
+        // Wait for the success message to appear
+        await driver.wait(until.elementLocated(By.id('message')), 5000);
+
+        // Get the message text
+        let message = await driver.findElement(By.id('message')).getText();
+        console.log('Test Result:', message);
+
+        // Check if registration is successful
+        if (message === 'Registration Successful!') {
+            console.log('Test Passed');
+        } else {
+            console.log('Test Failed');
+        }
+    } finally {
+        // Close the browser
+        await driver.quit();
+    }
+}
+
+testRegistrationForm();
